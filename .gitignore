@@ -1,0 +1,20 @@
+node_modules
+dist
+*.local
+
+# Build / cache
+.output
+.vinxi
+.tanstack
+.nitro
+
+# Lovable / Bun (not used)
+.lovable
+.workspace
+bun.lock
+bunfig.toml
+
+# OS / editor
+.DS_Store
+.idea
+*.log
