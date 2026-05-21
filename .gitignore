@@ -1,20 +1,32 @@
+# Dependencies
 node_modules
-dist
-*.local
 
-# Build / cache
+# Next.js
+.next
+out
+
+# Legacy TanStack / Vite (should not reappear)
+.tanstack
+.tmp
+tmp
+dist
 .output
 .vinxi
-.tanstack
 .nitro
 
-# Lovable / Bun (not used)
-.lovable
-.workspace
-bun.lock
-bunfig.toml
+# TypeScript
+*.tsbuildinfo
+
+# Environment
+.env
+.env*.local
+
+# Debug / logs
+npm-debug.log*
+*.log
 
 # OS / editor
 .DS_Store
 .idea
-*.log
+.vscode/*
+!.vscode/extensions.json
