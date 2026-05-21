@@ -4,6 +4,7 @@ import {
   createContext,
   useCallback,
   useContext,
+  useEffect,
   useSyncExternalStore,
   type ReactNode,
 } from "react";
@@ -54,24 +55,27 @@ type TaskStoreValue = {
   openTasks: Task[];
 };
 
+const seedState: StoreState = {
+  tasks: seedTasks,
+  applications: seedApplications,
+};
+
 function loadState(): StoreState {
-  if (typeof window === "undefined") {
-    return { tasks: seedTasks, applications: seedApplications };
-  }
+  if (typeof window === "undefined") return seedState;
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return { tasks: seedTasks, applications: seedApplications };
+    if (!raw) return seedState;
     const parsed = JSON.parse(raw) as StoreState;
     return {
       tasks: parsed.tasks?.length ? parsed.tasks : seedTasks,
       applications: parsed.applications ?? seedApplications,
     };
   } catch {
-    return { tasks: seedTasks, applications: seedApplications };
+    return seedState;
   }
 }
 
-let state: StoreState = loadState();
+let state: StoreState = seedState;
 const listeners = new Set<() => void>();
 
 function persist() {
@@ -107,8 +111,12 @@ export function TaskStoreProvider({ children }: { children: ReactNode }) {
       return () => listeners.delete(cb);
     },
     () => state,
-    () => state,
+    () => seedState,
   );
+
+  useEffect(() => {
+    setState(loadState());
+  }, []);
 
   const createTask = useCallback((input: CreateTaskInput): Task => {
     const task: Task = {

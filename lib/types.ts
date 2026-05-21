@@ -53,3 +53,35 @@ export type CreateTaskInput = {
 export type UpdateTaskInput = Partial<
   Omit<Task, "id" | "createdAt" | "match">
 > & { match?: number };
+
+export type ExperienceEntry = {
+  id: string;
+  role: string;
+  company: string;
+  duration: string;
+  description: string;
+};
+
+export type ProfessionalLinks = {
+  github: string;
+  linkedin: string;
+  portfolio: string;
+};
+
+export type UserProfile = {
+  fullName: string;
+  headline: string;
+  email: string;
+  location: string;
+  hourlyRate: string;
+  available: boolean;
+  bio: string;
+  skills: string[];
+  experience: ExperienceEntry[];
+  links: ProfessionalLinks;
+  resume: {
+    fileName: string;
+    updatedAt: string;
+    size: string;
+  };
+};

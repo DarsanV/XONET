@@ -11,7 +11,10 @@ export {
   seedTasks,
   type WorkItem,
 } from "./dummy-data";
+export { ProfileStoreProvider, useProfileStore } from "./profile-store";
 export { TaskStoreProvider, useTaskStore } from "./task-store";
+export { seedProfile } from "./dummy-data";
+export type { ExperienceEntry, ProfessionalLinks, UserProfile } from "./types";
 export type {
   Application,
   ApplicationStatus,

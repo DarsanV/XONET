@@ -1,3 +1,5 @@
+import type { Application, Freelancer, Task, UserProfile } from "@/lib/types";
+
 export const earningsTrend = [
   { month: "Jan", earnings: 3200 },
   { month: "Feb", earnings: 4100 },
@@ -120,7 +122,61 @@ export type WorkItem = {
   deadline: string;
 };
 
-import type { Application, Freelancer, Task } from "@/lib/types";
+export const seedProfile: UserProfile = {
+  fullName: "Alex Mercer",
+  headline: "Senior Full-Stack Engineer",
+  email: "alex@xonet.io",
+  location: "Lisbon, Portugal",
+  hourlyRate: "95",
+  available: true,
+  bio: "Senior engineer with 9+ years building polished web products for startups and growth-stage teams. I care about craft, performance, and shipping things people actually use.",
+  skills: [
+    "React",
+    "TypeScript",
+    "Node.js",
+    "Tailwind CSS",
+    "PostgreSQL",
+    "Figma",
+    "Next.js",
+    "AI / LLMs",
+  ],
+  experience: [
+    {
+      id: "exp-1",
+      role: "Senior Engineer",
+      company: "Helios Labs",
+      duration: "2023 — Present",
+      description:
+        "Lead full-stack delivery for B2B analytics products. Own architecture, mentoring, and client-facing demos.",
+    },
+    {
+      id: "exp-2",
+      role: "Front-end Lead",
+      company: "Layerframe",
+      duration: "2020 — 2023",
+      description:
+        "Shipped design system and marketing site relaunch. Improved Core Web Vitals by 40%.",
+    },
+    {
+      id: "exp-3",
+      role: "Full-stack Developer",
+      company: "Quill & Co.",
+      duration: "2017 — 2020",
+      description:
+        "Built content workflows and subscription billing for a media SaaS platform.",
+    },
+  ],
+  links: {
+    github: "github.com/alexmercer",
+    linkedin: "linkedin.com/in/alexmercer",
+    portfolio: "alexmercer.dev",
+  },
+  resume: {
+    fileName: "alex-mercer-resume.pdf",
+    updatedAt: "3 days ago",
+    size: "412 KB",
+  },
+};
 
 export const TASK_CATEGORIES = [
   "Engineering",

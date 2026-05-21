@@ -13,8 +13,10 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useProfileStore } from "@/lib/profile-store";
 
 export function TopNav() {
+  const { profile } = useProfileStore();
   return (
     <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b border-border bg-background/80 px-4 backdrop-blur-md md:px-6">
       <SidebarTrigger className="md:hidden" />
@@ -48,8 +50,8 @@ export function TopNav() {
         <DropdownMenuContent align="end" className="w-56 border-border bg-card">
           <DropdownMenuLabel className="font-normal">
             <div className="flex flex-col gap-0.5">
-              <span className="text-sm font-medium">Alex Mercer</span>
-              <span className="text-xs text-muted-foreground">alex@xonet.io</span>
+              <span className="text-sm font-medium">{profile.fullName}</span>
+              <span className="text-xs text-muted-foreground">{profile.email}</span>
             </div>
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
