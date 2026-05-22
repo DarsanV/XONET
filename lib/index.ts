@@ -4,13 +4,13 @@ export {
   EXPERIENCE_LEVELS,
   TASK_CATEGORIES,
   earningsTrend,
-  myWorks,
+  seedWorks,
   projectStatus,
   seedApplications,
   seedFreelancers,
   seedTasks,
-  type WorkItem,
 } from "./dummy-data";
+export type { TaskMessage, WorkItem } from "./types";
 export { ProfileStoreProvider, useProfileStore } from "./profile-store";
 export { TaskStoreProvider, useTaskStore } from "./task-store";
 export { seedProfile } from "./dummy-data";

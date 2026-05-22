@@ -16,7 +16,31 @@ export type Task = {
   match: number;
   assignedFreelancerId?: string;
   paymentStatus: PaymentStatus;
+  progress: number;
+  lastActivity?: string;
+  lastActivityAt?: string;
   createdAt: string;
+};
+
+export type WorkItem = {
+  id: string;
+  taskId: string;
+  freelancerId: string;
+  project: string;
+  client: string;
+  status: "Active" | "Completed" | "In Review";
+  payment: string;
+  progress: number;
+  deadline: string;
+  lastUpdatedAt: string;
+};
+
+export type TaskMessage = {
+  id: string;
+  taskId: string;
+  sender: "client" | "freelancer";
+  text: string;
+  sentAt: string;
 };
 
 export type Freelancer = {

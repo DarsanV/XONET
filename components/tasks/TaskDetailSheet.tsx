@@ -7,20 +7,28 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
+import { Button } from "@/components/ui/button";
+import { Progress } from "@/components/ui/progress";
 import { TaskStatusBadge, PaymentStatusBadge } from "@/components/tasks/TaskStatusBadge";
 import { SkillTags } from "@/components/tasks/SkillTags";
 import { TaskApplicationsPanel } from "@/components/tasks/TaskApplicationsPanel";
-import { useTaskStore } from "@/lib/task-store";
+import { useTaskStore, formatRelativeTime } from "@/lib/task-store";
 import type { Task } from "@/lib/types";
-import { UserCheck } from "lucide-react";
+import { Activity, MessageSquare, UserCheck } from "lucide-react";
 
 type TaskDetailSheetProps = {
   task: Task | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  onOpenChat?: (task: Task) => void;
 };
 
-export function TaskDetailSheet({ task, open, onOpenChange }: TaskDetailSheetProps) {
+export function TaskDetailSheet({
+  task,
+  open,
+  onOpenChange,
+  onOpenChat,
+}: TaskDetailSheetProps) {
   const { getFreelancer, getApplicationsForTask } = useTaskStore();
 
   if (!task) return null;
@@ -48,6 +56,40 @@ export function TaskDetailSheet({ task, open, onOpenChange }: TaskDetailSheetPro
               {task.match}% match
             </span>
           </div>
+
+          {task.assignedFreelancerId && (
+            <div className="space-y-3 rounded-md border border-border bg-background/50 p-4">
+              <p className="text-xs uppercase tracking-wider text-muted-foreground">
+                Collaboration progress
+              </p>
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-muted-foreground">Completion</span>
+                <span className="font-medium tabular-nums">{task.progress}%</span>
+              </div>
+              <Progress value={task.progress} className="h-1.5 bg-secondary" />
+              {task.lastActivity && (
+                <div className="flex items-start gap-2 text-xs text-muted-foreground">
+                  <Activity className="mt-0.5 h-3.5 w-3.5 shrink-0 text-accent" />
+                  <div>
+                    <p>{task.lastActivity}</p>
+                    {task.lastActivityAt && (
+                      <p className="mt-0.5">{formatRelativeTime(task.lastActivityAt)}</p>
+                    )}
+                  </div>
+                </div>
+              )}
+              {onOpenChat && (
+                <Button
+                  type="button"
+                  className="h-9 w-full gap-2 rounded-md"
+                  onClick={() => onOpenChat(task)}
+                >
+                  <MessageSquare className="h-4 w-4" />
+                  Open Chat
+                </Button>
+              )}
+            </div>
+          )}
 
           <div>
             <p className="text-xs uppercase tracking-wider text-muted-foreground">Description</p>

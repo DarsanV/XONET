@@ -1,4 +1,11 @@
-import type { Application, Freelancer, Task, UserProfile } from "@/lib/types";
+import type {
+  Application,
+  Freelancer,
+  Task,
+  TaskMessage,
+  UserProfile,
+  WorkItem,
+} from "@/lib/types";
 
 export const earningsTrend = [
   { month: "Jan", earnings: 3200 },
@@ -112,16 +119,6 @@ export const exploreJobs = [
   },
 ];
 
-export type WorkItem = {
-  id: string;
-  project: string;
-  client: string;
-  status: "Active" | "Completed" | "In Review";
-  payment: string;
-  progress: number;
-  deadline: string;
-};
-
 export const seedProfile: UserProfile = {
   fullName: "Alex Mercer",
   headline: "Senior Full-Stack Engineer",
@@ -208,9 +205,13 @@ export const seedTasks: Task[] = [
     deadline: "Oct 14, 2026",
     experienceLevel: "Senior",
     category: "Engineering",
-    status: "Open",
+    status: "In Progress",
     match: 94,
-    paymentStatus: "Unpaid",
+    assignedFreelancerId: "f1",
+    paymentStatus: "Partial",
+    progress: 72,
+    lastActivity: "Alex Mercer updated progress to 72%",
+    lastActivityAt: "2026-05-20T14:30:00.000Z",
     createdAt: "2026-05-01T10:00:00.000Z",
   },
   {
@@ -227,6 +228,9 @@ export const seedTasks: Task[] = [
     match: 88,
     assignedFreelancerId: "f2",
     paymentStatus: "Partial",
+    progress: 41,
+    lastActivity: "Priya Shah submitted dashboard wireframes for review",
+    lastActivityAt: "2026-05-21T09:15:00.000Z",
     createdAt: "2026-04-15T10:00:00.000Z",
   },
   {
@@ -242,6 +246,7 @@ export const seedTasks: Task[] = [
     status: "Open",
     match: 81,
     paymentStatus: "Unpaid",
+    progress: 0,
     createdAt: "2026-05-05T10:00:00.000Z",
   },
   {
@@ -257,6 +262,7 @@ export const seedTasks: Task[] = [
     status: "Open",
     match: 90,
     paymentStatus: "Unpaid",
+    progress: 0,
     createdAt: "2026-05-08T10:00:00.000Z",
   },
   {
@@ -273,6 +279,9 @@ export const seedTasks: Task[] = [
     match: 86,
     assignedFreelancerId: "f3",
     paymentStatus: "Paid",
+    progress: 100,
+    lastActivity: "Morgan Lee marked all deliverables complete",
+    lastActivityAt: "2026-05-18T16:00:00.000Z",
     createdAt: "2026-03-01T10:00:00.000Z",
   },
   {
@@ -288,9 +297,84 @@ export const seedTasks: Task[] = [
     status: "Open",
     match: 83,
     paymentStatus: "Unpaid",
+    progress: 0,
     createdAt: "2026-05-10T10:00:00.000Z",
   },
 ];
+
+export const seedWorks: WorkItem[] = [
+  {
+    id: "w1",
+    taskId: "task-seed-1",
+    freelancerId: "f1",
+    project: "Mobile-first marketing site redesign",
+    client: "XONET Client",
+    status: "Active",
+    payment: "$3,800",
+    progress: 72,
+    deadline: "Oct 14, 2026",
+    lastUpdatedAt: "2026-05-20T14:30:00.000Z",
+  },
+  {
+    id: "w2",
+    taskId: "task-seed-2",
+    freelancerId: "f2",
+    project: "Enterprise analytics dashboard",
+    client: "Northwind Capital",
+    status: "Active",
+    payment: "$7,200",
+    progress: 41,
+    deadline: "Nov 02, 2026",
+    lastUpdatedAt: "2026-05-21T09:15:00.000Z",
+  },
+  {
+    id: "w5",
+    taskId: "task-seed-5",
+    freelancerId: "f3",
+    project: "Realtime collaboration features",
+    client: "Layerframe",
+    status: "Completed",
+    payment: "$6,000",
+    progress: 100,
+    deadline: "Dec 05, 2026",
+    lastUpdatedAt: "2026-05-18T16:00:00.000Z",
+  },
+];
+
+export const seedMessages: Record<string, TaskMessage[]> = {
+  "task-seed-1": [
+    {
+      id: "msg-1",
+      taskId: "task-seed-1",
+      sender: "client",
+      text: "Welcome aboard — kickoff deck is in the shared folder. Let me know when hero animations are ready for review.",
+      sentAt: "2026-05-12T10:00:00.000Z",
+    },
+    {
+      id: "msg-2",
+      taskId: "task-seed-1",
+      sender: "freelancer",
+      text: "Thanks! I'll share the motion prototype by Thursday. Progress is at 72% after finishing the design system pass.",
+      sentAt: "2026-05-20T14:28:00.000Z",
+    },
+  ],
+  "task-seed-2": [
+    {
+      id: "msg-3",
+      taskId: "task-seed-2",
+      sender: "freelancer",
+      text: "Dashboard wireframes are ready — filtering UX follows the spec we aligned on last week.",
+      sentAt: "2026-05-21T09:10:00.000Z",
+    },
+    {
+      id: "msg-4",
+      taskId: "task-seed-2",
+      sender: "client",
+      text: "Looks great. Please proceed with the export module next; we're targeting 50% by end of month.",
+      sentAt: "2026-05-21T11:30:00.000Z",
+    },
+  ],
+};
 
 export const seedFreelancers: Freelancer[] = [
   {
@@ -407,11 +491,5 @@ export const seedApplications: Application[] = [
   },
 ];
 
-export const myWorks: WorkItem[] = [
-  { id: "w1", project: "Brand site relaunch", client: "Aurora Studio", status: "Active", payment: "$4,200", progress: 72, deadline: "Oct 22, 2026" },
-  { id: "w2", project: "Investor portal v2", client: "Northwind Capital", status: "Active", payment: "$8,500", progress: 41, deadline: "Nov 10, 2026" },
-  { id: "w3", project: "Mobile onboarding redesign", client: "Layerframe", status: "In Review", payment: "$2,800", progress: 95, deadline: "Oct 18, 2026" },
-  { id: "w4", project: "Customer dashboard MVP", client: "Helios Labs", status: "Completed", payment: "$6,400", progress: 100, deadline: "Sep 28, 2026" },
-  { id: "w5", project: "Marketing automation tool", client: "Quill & Co.", status: "Completed", payment: "$3,900", progress: 100, deadline: "Sep 12, 2026" },
-  { id: "w6", project: "AI search prototype", client: "Helios Labs", status: "Active", payment: "$5,100", progress: 28, deadline: "Nov 24, 2026" },
-];
+/** @deprecated Use seedWorks via task store */
+export const myWorks = seedWorks;
