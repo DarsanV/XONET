@@ -1,0 +1,25 @@
+import { getSession } from "next-auth/react";
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
+
+export async function apiFetch(path, options = {}) {
+    const session = typeof window !== "undefined" ? await getSession() : null;
+    const headers = {
+        "Content-Type": "application/json",
+        ...(options.headers || {}),
+    };
+    if (session?.accessToken) {
+        headers.Authorization = `Bearer ${session.accessToken}`;
+    }
+    const res = await fetch(`${API_URL}${path}`, {
+        ...options,
+        headers,
+    });
+    const json = await res.json().catch(() => ({}));
+    if (!res.ok || json.success === false) {
+        const err = new Error(json.error || "Request failed");
+        err.status = res.status;
+        throw err;
+    }
+    return json.data;
+}

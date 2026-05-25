@@ -5,21 +5,10 @@ node_modules
 .next
 out
 
-# Legacy TanStack / Vite (should not reappear)
-.tanstack
-.tmp
-tmp
-dist
-.output
-.vinxi
-.nitro
-
-# TypeScript
-*.tsbuildinfo
-
 # Environment
 .env
 .env*.local
+backend/.env
 
 # Debug / logs
 npm-debug.log*
@@ -31,3 +20,13 @@ npm-debug.log*
 .cursor
 .vscode/*
 !.vscode/extensions.json
+
+# Legacy
+.tanstack
+.tmp
+tmp
+dist
+.output
+.vinxi
+.nitro
+*.tsbuildinfo

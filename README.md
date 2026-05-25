@@ -1,62 +1,81 @@
-# XONET Frontend
+# XONET — Monorepo
 
-Premium dark freelancer portal built with **Next.js App Router**, Tailwind CSS v4, shadcn/ui, and Lucide React.
-
-## Quick start
-
-```bash
-npm install
-npm run dev      # http://localhost:3000
-npm run build
-npm run start
-npm run lint
-```
+Premium dark freelancer marketplace with a **Next.js frontend** and **Express + MongoDB backend**.
 
 ## Project structure
 
 ```
-app/                    # Next.js App Router (pages + layouts)
-  (dashboard)/          # Main app shell with sidebar
-  globals.css           # Theme & Tailwind
-  layout.tsx            # Root layout + providers
-
-components/
-  layout/               # AppLayout, AppSidebar, TopNav
-  views/                # Page-level client components
-  tasks/                # Task UI (cards, forms, applications)
-  ui/                   # shadcn/ui primitives
-  providers.tsx         # Global client providers
-
-lib/
-  navigation.ts         # Sidebar nav config
-  task-store.tsx        # Client state (localStorage)
-  dummy-data.ts         # Seed data & chart fixtures
-  types.ts
-  utils.ts
-
-hooks/
-public/                 # Static assets
+xonet/
+├── frontend/          # Next.js App Router UI
+│   ├── app/           # Pages & NextAuth route
+│   ├── components/    # UI components
+│   ├── lib/           # Client utilities & workspace provider
+│   └── hooks/
+├── backend/           # Express REST API
+│   ├── src/
+│   │   ├── models/    # Mongoose schemas
+│   │   ├── services/  # Business logic
+│   │   ├── controllers/
+│   │   ├── routes/
+│   │   ├── middleware/
+│   │   └── db/
+│   └── scripts/       # Database seed
+└── package.json       # Workspace root (runs both apps)
 ```
 
-## Routes
+## Quick start
 
-| Path | Page |
-|------|------|
-| `/` | Dashboard |
-| `/explore` | Explore Tasks |
-| `/tasks` | Tasks & applications |
-| `/tasks/create` | Create Task |
-| `/my-works` | My Works |
-| `/freelancers` | Freelancers |
-| `/account` | Profile |
+1. **Install dependencies** (from repo root):
 
-Legacy URLs redirect in `next.config.ts`:
+```bash
+npm install
+```
 
-- `/create-task` → `/tasks/create`
-- `/applications` → `/tasks?tab=applications`
+2. **Configure environment**:
 
-## Stack
+```bash
+cp backend/.env.example backend/.env
+cp frontend/.env.example frontend/.env.local
+```
 
-- Next.js 15 · React 19 · TypeScript
-- Tailwind CSS 4 · shadcn/ui · Recharts
-- Client task store with `localStorage` (demo; no backend required)
+Set `MONGODB_URI`, `JWT_SECRET` / `NEXTAUTH_SECRET`, and URLs.
+
+3. **Run both servers**:
+
+```bash
+npm run dev
+```
+
+- Frontend: http://localhost:3000  
+- Backend API: http://localhost:4000  
+
+4. **Optional seed data**:
+
+```bash
+npm run seed
+```
+
+## Scripts
+
+| Command | Description |
+|---------|-------------|
+| `npm run dev` | Start frontend + backend |
+| `npm run dev:frontend` | Next.js only (port 3000) |
+| `npm run dev:backend` | Express API only (port 4000) |
+| `npm run build` | Build frontend for production |
+| `npm run seed` | Seed MongoDB with demo users |
+
+## API (backend)
+
+All routes are prefixed with `/api`:
+
+- `POST /api/auth/register` · `POST /api/auth/login`
+- `GET /api/workspace`
+- `POST /api/tasks` · `PATCH/DELETE /api/tasks/:id`
+- `POST /api/applications` · `PATCH /api/applications/:id`
+- `PATCH /api/works/:id`
+- `GET/POST /api/messages`
+- `PATCH /api/profile`
+- `GET /api/freelancers`
+
+The frontend authenticates via **NextAuth** (JWT session) and sends the backend **Bearer token** on every API call.
