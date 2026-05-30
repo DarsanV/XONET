@@ -1,81 +1,160 @@
-# XONET — Monorepo
+# XONET — AI-Powered Freelance Marketplace
 
-Premium dark freelancer marketplace with a **Next.js frontend** and **Express + MongoDB backend**.
+Modern freelance marketplace that intelligently connects clients and freelancers through streamlined task management, project tracking, and AI-driven workflow management.
 
-## Project structure
+## Project Structure
 
-```
+```text
 xonet/
-├── frontend/          # Next.js App Router UI
-│   ├── app/           # Pages & NextAuth route
-│   ├── components/    # UI components
-│   ├── lib/           # Client utilities & workspace provider
-│   └── hooks/
-├── backend/           # Express REST API
+├── frontend/                  # Next.js Frontend
+│   ├── app/                   # App Router pages
+│   ├── components/            # Reusable UI components
+│   ├── hooks/                 # Custom React hooks
+│   ├── lib/                   # Utilities & API clients
+│   └── public/
+│
+├── backend/                   # Express Backend
 │   ├── src/
-│   │   ├── models/    # Mongoose schemas
-│   │   ├── services/  # Business logic
-│   │   ├── controllers/
-│   │   ├── routes/
-│   │   ├── middleware/
-│   │   └── db/
-│   └── scripts/       # Database seed
-└── package.json       # Workspace root (runs both apps)
+│   │   ├── controllers/       # Request handlers
+│   │   ├── routes/            # API routes
+│   │   ├── models/            # Mongoose models
+│   │   ├── middleware/        # Auth & validation
+│   │   ├── services/          # Business logic
+│   │   └── db/                # Database configuration
+│   │
+│   └── scripts/
+│
+└── package.json
 ```
 
-## Quick start
+## Features
 
-1. **Install dependencies** (from repo root):
+* Secure Authentication (JWT)
+* Client & Freelancer Workflows
+* Task Creation & Management
+* Freelancer Applications
+* Project Assignment System
+* Profile Management
+* Skills & Experience Tracking
+* MongoDB Atlas Integration
+* Responsive Dashboard UI
+* Modern Dark Professional Design
+
+## Tech Stack
+
+### Frontend
+
+* Next.js
+* React.js
+* Tailwind CSS
+* shadcn/ui
+* Lucide React
+
+### Backend
+
+* Node.js
+* Express.js
+* JWT Authentication
+* REST APIs
+
+### Database
+
+* MongoDB Atlas
+* Mongoose
+
+## Quick Start
+
+### Install Dependencies
 
 ```bash
 npm install
 ```
 
-2. **Configure environment**:
+### Configure Environment
 
-```bash
-cp backend/.env.example backend/.env
-cp frontend/.env.example frontend/.env.local
+Backend:
+
+```env
+PORT=4000
+MONGO_URI=your_mongodb_connection_string
+JWT_SECRET=your_secret_key
 ```
 
-Set `MONGODB_URI`, `JWT_SECRET` / `NEXTAUTH_SECRET`, and URLs.
+Frontend:
 
-3. **Run both servers**:
+```env
+NEXT_PUBLIC_API_URL=http://localhost:4000
+```
+
+### Run Application
 
 ```bash
 npm run dev
 ```
 
-- Frontend: http://localhost:3000  
-- Backend API: http://localhost:4000  
+Frontend:
 
-4. **Optional seed data**:
-
-```bash
-npm run seed
+```text
+http://localhost:3000
 ```
 
-## Scripts
+Backend:
 
-| Command | Description |
-|---------|-------------|
-| `npm run dev` | Start frontend + backend |
-| `npm run dev:frontend` | Next.js only (port 3000) |
-| `npm run dev:backend` | Express API only (port 4000) |
-| `npm run build` | Build frontend for production |
-| `npm run seed` | Seed MongoDB with demo users |
+```text
+http://localhost:4000
+```
 
-## API (backend)
+## Available Scripts
 
-All routes are prefixed with `/api`:
+| Command              | Description               |
+| -------------------- | ------------------------- |
+| npm run dev          | Run frontend and backend  |
+| npm run dev:frontend | Run Next.js frontend      |
+| npm run dev:backend  | Run Express backend       |
+| npm run build        | Build production frontend |
+| npm run start        | Start production build    |
 
-- `POST /api/auth/register` · `POST /api/auth/login`
-- `GET /api/workspace`
-- `POST /api/tasks` · `PATCH/DELETE /api/tasks/:id`
-- `POST /api/applications` · `PATCH /api/applications/:id`
-- `PATCH /api/works/:id`
-- `GET/POST /api/messages`
-- `PATCH /api/profile`
-- `GET /api/freelancers`
+## Core Modules
 
-The frontend authenticates via **NextAuth** (JWT session) and sends the backend **Bearer token** on every API call.
+### Authentication
+
+* User Registration
+* User Login
+* JWT Authorization
+* Protected Routes
+
+### Tasks
+
+* Create Tasks
+* Edit Tasks
+* Manage Deadlines
+* Assign Freelancers
+* Track Progress
+
+### Freelancer Portal
+
+* Explore Projects
+* Submit Applications
+* Manage Assigned Work
+
+### Profile Management
+
+* Skills Management
+* Experience Tracking
+* Portfolio Links
+* Availability Status
+
+## Future Enhancements
+
+* AI Job Matching
+* Smart Proposal Generation
+* Resume Analysis
+* Payment Gateway Integration
+* Analytics Dashboard
+* Recommendation Engine
+
+## Author
+
+**Darsan Viswanathan**
+
+Built to simplify freelancer-client collaboration through a scalable, modern, and intelligent project management ecosystem.
