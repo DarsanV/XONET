@@ -50,20 +50,38 @@ export async function updateApplicationStatus(applicationId, ownerId, status) {
         throw err;
     }
     const task = await Task.findById(app.task._id ?? app.task);
+    if (!task) {
+        const err = new Error("Task not found");
+        err.status = 404;
+        throw err;
+    }
     if (task.creator.toString() !== ownerId.toString()) {
         const err = new Error("Forbidden");
         err.status = 403;
         throw err;
     }
-    app.status = status;
-    await app.save();
-
+    if (app.status !== "Pending" && status !== app.status) {
+        const err = new Error(`Application is already ${app.status.toLowerCase()}`);
+        err.status = 400;
+        throw err;
+    }
     if (status === "Accepted") {
+        if (task.status !== "Open") {
+            const err = new Error("Task is not open for assignment");
+            err.status = 400;
+            throw err;
+        }
         await Application.updateMany(
             { task: task._id, _id: { $ne: app._id } },
             { status: "Rejected" }
         );
+        app.status = "Accepted";
+        await app.save();
         await assignFreelancerToTask(task._id.toString(), ownerId, app.freelancer.toString());
+    }
+    else {
+        app.status = status;
+        await app.save();
     }
 
     const populated = await Application.findById(app._id).populate("task freelancer");

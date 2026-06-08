@@ -6,7 +6,7 @@ import { TaskStatusBadge, PaymentStatusBadge } from "@/components/tasks/TaskStat
 import { SkillTags } from "@/components/tasks/SkillTags";
 import { TaskApplicationsPanel } from "@/components/tasks/TaskApplicationsPanel";
 import { useTaskStore, formatRelativeTime } from "@/lib/task-store";
-import { Activity, MessageSquare, UserCheck } from "lucide-react";
+import { Activity, UserCheck } from "lucide-react";
 export function TaskDetailSheet({ task, open, onOpenChange, }) {
     const { getFreelancer, getApplicationsForTask } = useTaskStore();
     if (!task)

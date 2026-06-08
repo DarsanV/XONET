@@ -21,7 +21,7 @@ import { toast } from "sonner";
 export function TasksView() {
     const searchParams = useSearchParams();
     const tabParam = searchParams.get("tab");
-    const { myPostedTasks, applications, assignedTasks, updateTask, deleteTask, getFreelancer } = useTaskStore();
+    const { myPostedTasks, applications, assignedTasks, updateTask, deleteTask, getFreelancer, error, refresh } = useTaskStore();
     const [mainTab, setMainTab] = useState(tabParam === "applications" ? "applications" : "posted");
     const [editTask, setEditTask] = useState(null);
     const [deleteId, setDeleteId] = useState(null);
@@ -30,19 +30,35 @@ export function TasksView() {
         if (tabParam === "applications")
             setMainTab("applications");
     }, [tabParam]);
-    const postedTasks = myPostedTasks.filter((t) => !t.assignedFreelancerId || t.status === "Open");
+    const postedTasks = myPostedTasks.filter((t) => !t.assignedFreelancerId);
     async function handleStatusChange(id, status) {
-        await updateTask(id, {
-            status,
-            paymentStatus: status === "Completed" ? "Paid" : status === "In Progress" ? "Partial" : undefined,
-        });
-        toast.success(`Task marked as ${status}`);
+        try {
+            await updateTask(id, {
+                status,
+                paymentStatus: status === "Completed" ? "Paid" : status === "In Progress" ? "Partial" : undefined,
+            });
+            toast.success(`Task marked as ${status}`);
+        }
+        catch (err) {
+            toast.error(err.message || "Could not update task status");
+        }
     }
     async function handlePaymentChange(id, paymentStatus) {
-        await updateTask(id, { paymentStatus });
-        toast.success(`Payment status updated to ${paymentStatus}`);
+        try {
+            await updateTask(id, { paymentStatus });
+            toast.success(`Payment status updated to ${paymentStatus}`);
+        }
+        catch (err) {
+            toast.error(err.message || "Could not update payment status");
+        }
     }
     return (<div className="space-y-8">
+      {error && (<Card className="border-destructive/50 bg-destructive/10 px-4 py-3 text-sm text-destructive">
+          {error}
+          <Button type="button" variant="link" className="ml-2 h-auto p-0 text-destructive" onClick={() => refresh()}>
+            Retry
+          </Button>
+        </Card>)}
       <PageHeader eyebrow="Tasks" title="Task management" description="Collaborate with assigned freelancers, track live progress, and manage postings." action={<Button asChild className="h-10 gap-2 rounded-md px-5">
             <Link href="/tasks/create">
               <Plus className="h-4 w-4"/> Create Task
@@ -68,7 +84,13 @@ export function TasksView() {
           </Card>) : (<div className="grid grid-cols-1 gap-4 lg:grid-cols-2 xl:grid-cols-3">
             {assignedTasks.map((task) => {
                 const freelancer = task.assignedFreelancerId
-                    ? getFreelancer(task.assignedFreelancerId)
+                    ? getFreelancer(task.assignedFreelancerId) ?? {
+                        id: task.assignedFreelancerId,
+                        name: "Assigned freelancer",
+                        headline: "Profile loading…",
+                        location: "—",
+                        rate: "—",
+                    }
                     : undefined;
                 if (!freelancer)
                     return null;
@@ -105,9 +127,14 @@ export function TasksView() {
             </DialogDescription>
           </DialogHeader>
           {editTask && (<TaskForm defaultValues={editTask} submitLabel="Save changes" onCancel={() => setEditTask(null)} onSubmit={async (data) => {
-                await updateTask(editTask.id, data);
-                toast.success("Task updated");
-                setEditTask(null);
+                try {
+                    await updateTask(editTask.id, data);
+                    toast.success("Task updated");
+                    setEditTask(null);
+                }
+                catch (err) {
+                    toast.error(err.message || "Could not update task");
+                }
             }}/>)}
         </DialogContent>
       </Dialog>
@@ -124,9 +151,14 @@ export function TasksView() {
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction className="bg-destructive text-destructive-foreground hover:bg-destructive/90" onClick={async () => {
             if (deleteId) {
-                await deleteTask(deleteId);
-                toast.success("Task deleted");
-                setDeleteId(null);
+                try {
+                    await deleteTask(deleteId);
+                    toast.success("Task deleted");
+                    setDeleteId(null);
+                }
+                catch (err) {
+                    toast.error(err.message || "Could not delete task");
+                }
             }
         }}>
               Delete

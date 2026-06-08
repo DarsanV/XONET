@@ -14,6 +14,18 @@ const createSchema = z.object({
     category: z.string().min(1),
 });
 
+const updateSchema = z.object({
+    title: z.string().min(3).optional(),
+    description: z.string().min(10).optional(),
+    skills: z.array(z.string()).optional(),
+    budget: z.string().min(1).optional(),
+    deadline: z.string().min(1).optional(),
+    experienceLevel: z.string().min(1).optional(),
+    category: z.string().min(1).optional(),
+    status: z.enum(["Open", "In Progress", "Completed"]).optional(),
+    paymentStatus: z.enum(["Unpaid", "Partial", "Paid"]).optional(),
+});
+
 export async function create(req, res) {
     await connectDB();
     const user = await User.findById(req.user.id);
@@ -29,7 +41,11 @@ export async function create(req, res) {
 }
 
 export async function update(req, res) {
-    const task = await updateTask(req.params.id, req.user.id, req.body);
+    const parsed = updateSchema.safeParse(req.body);
+    if (!parsed.success) {
+        return res.status(400).json({ success: false, error: parsed.error.errors[0]?.message });
+    }
+    const task = await updateTask(req.params.id, req.user.id, parsed.data);
     return res.json({ success: true, data: { task } });
 }
 

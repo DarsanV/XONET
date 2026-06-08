@@ -1,5 +1,5 @@
 "use client";
-import { Check, X, UserPlus } from "lucide-react";
+import { Check, X } from "lucide-react";
 import { ApplicationStatusBadge } from "@/components/tasks/TaskStatusBadge";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -7,23 +7,29 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow, } from "
 import { useTaskStore } from "@/lib/task-store";
 import { toast } from "sonner";
 export function TaskApplicationsPanel({ taskId, showTaskColumn = !taskId, }) {
-    const { applications, getTask, getFreelancer, updateApplicationStatus, assignFreelancer, userId, } = useTaskStore();
+    const { applications, getTask, getFreelancer, updateApplicationStatus, userId } = useTaskStore();
     const filtered = (taskId
         ? applications.filter((a) => a.taskId === taskId)
         : applications.filter((a) => getTask(a.taskId)?.creatorId === userId));
     async function handleAccept(app) {
-        await updateApplicationStatus(app.id, "Accepted");
-        toast.success("Application accepted", {
-            description: "Freelancer assigned and task moved to In Progress.",
-        });
+        try {
+            await updateApplicationStatus(app.id, "Accepted");
+            toast.success("Application accepted", {
+                description: "Freelancer assigned and task moved to In Progress.",
+            });
+        }
+        catch (err) {
+            toast.error(err.message || "Could not accept application");
+        }
     }
     async function handleReject(app) {
-        await updateApplicationStatus(app.id, "Rejected");
-        toast.success("Application rejected");
-    }
-    async function handleAssign(app) {
-        await assignFreelancer(app.taskId, app.freelancerId);
-        toast.success("Freelancer assigned to task");
+        try {
+            await updateApplicationStatus(app.id, "Rejected");
+            toast.success("Application rejected");
+        }
+        catch (err) {
+            toast.error(err.message || "Could not reject application");
+        }
     }
     if (filtered.length === 0) {
         return (<Card className="border-border bg-card py-16 text-center text-sm text-muted-foreground">
@@ -73,17 +79,17 @@ export function TaskApplicationsPanel({ taskId, showTaskColumn = !taskId, }) {
                   <ApplicationStatusBadge status={app.status}/>
                 </TableCell>
                 <TableCell>
-                  {app.status === "Pending" && (<div className="flex flex-wrap justify-end gap-1">
-                      <Button size="sm" variant="secondary" className="h-8 gap-1 rounded-md text-xs" onClick={() => handleAccept(app)}>
-                        <Check className="h-3 w-3"/> Accept
-                      </Button>
-                      <Button size="sm" className="h-8 gap-1 rounded-md text-xs" onClick={() => handleAssign(app)}>
-                        <UserPlus className="h-3 w-3"/> Assign
+                  {app.status === "Pending" && task?.status === "Open" && (<div className="flex flex-wrap justify-end gap-1">
+                      <Button size="sm" className="h-8 gap-1 rounded-md text-xs" onClick={() => handleAccept(app)}>
+                        <Check className="h-3 w-3"/> Accept & assign
                       </Button>
                       <Button size="sm" variant="ghost" className="h-8 gap-1 rounded-md text-xs text-destructive hover:text-destructive" onClick={() => handleReject(app)}>
                         <X className="h-3 w-3"/> Reject
                       </Button>
                     </div>)}
+                  {app.status === "Pending" && task?.status !== "Open" && (
+                    <span className="text-xs text-muted-foreground">Task closed</span>
+                  )}
                 </TableCell>
               </TableRow>);
         })}

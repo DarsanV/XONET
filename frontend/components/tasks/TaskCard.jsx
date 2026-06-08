@@ -20,12 +20,17 @@ export function TaskCard({ task, showApply = true, showStatus = false }) {
     const applied = hasApplied(task.id);
     const canApply = showApply && task.status === "Open" && !applied && !owned;
     async function handleApply() {
-        if (!coverLetter.trim()) {
-            toast.error("Please add a short cover letter.");
+        const letter = coverLetter.trim();
+        if (!letter) {
+            toast.error("Please add a cover letter.");
             return;
         }
-        const result = await applyToTask(task.id, null, coverLetter.trim(), proposedRate.trim() || undefined);
-        if (result) {
+        if (letter.length < 10) {
+            toast.error("Cover letter must be at least 10 characters.");
+            return;
+        }
+        try {
+            await applyToTask(task.id, null, letter, proposedRate.trim() || undefined);
             toast.success("Application submitted", {
                 description: "The client will review your proposal shortly.",
             });
@@ -33,11 +38,8 @@ export function TaskCard({ task, showApply = true, showStatus = false }) {
             setCoverLetter("");
             setProposedRate("");
         }
-        else if (owned) {
-            toast.error("You cannot apply to your own task.");
-        }
-        else {
-            toast.error("You've already applied to this task.");
+        catch (err) {
+            toast.error(err.message || "Could not submit application");
         }
     }
     return (<>

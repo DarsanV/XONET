@@ -82,17 +82,12 @@ export function WorkspaceProvider({ children }) {
     }, [refresh]);
 
     const applyToTask = useCallback(async (taskId, _freelancerId, coverLetter, proposedRate = "") => {
-        try {
-            const { application } = await apiFetch("/api/applications", {
-                method: "POST",
-                body: JSON.stringify({ taskId, coverLetter, proposedRate }),
-            });
-            await refresh();
-            return application;
-        }
-        catch {
-            return null;
-        }
+        const { application } = await apiFetch("/api/applications", {
+            method: "POST",
+            body: JSON.stringify({ taskId, coverLetter, proposedRate }),
+        });
+        await refresh();
+        return application;
     }, [refresh]);
 
     const updateApplicationStatus = useCallback(async (applicationId, status) => {
@@ -102,17 +97,6 @@ export function WorkspaceProvider({ children }) {
         });
         await refresh();
     }, [refresh]);
-
-    const assignFreelancer = useCallback(async (taskId, freelancerId) => {
-        const app = workspace.applications.find((a) => a.taskId === taskId && a.freelancerId === freelancerId);
-        if (app) {
-            await apiFetch(`/api/applications/${app.id}`, {
-                method: "PATCH",
-                body: JSON.stringify({ status: "Accepted", assign: true }),
-            });
-        }
-        await refresh();
-    }, [workspace.applications, refresh]);
 
     const updateWorkProgress = useCallback(async (workId, progress) => {
         await apiFetch(`/api/works/${workId}`, {
@@ -141,13 +125,30 @@ export function WorkspaceProvider({ children }) {
         deleteTask,
         applyToTask,
         updateApplicationStatus,
-        assignFreelancer,
         updateWorkProgress,
         getTask: (id) => workspace.tasks.find((t) => t.id === id),
         getWorkForTask: (taskId) => workspace.works.find((w) => w.taskId === taskId),
         getMyWorks: () => workspace.works.filter((w) => w.freelancerId === userId),
         getApplicationsForTask: (taskId) => workspace.applications.filter((a) => a.taskId === taskId),
-        getFreelancer: (id) => workspace.freelancers.find((f) => f.id === id),
+        getFreelancer: (id) => {
+            const fromList = workspace.freelancers.find((f) => f.id === id);
+            if (fromList)
+                return fromList;
+            const fromApplication = workspace.applications.find((a) => a.freelancerId === id);
+            if (fromApplication) {
+                return {
+                    id,
+                    name: "Freelancer",
+                    headline: "",
+                    location: "",
+                    skills: [],
+                    rate: fromApplication.proposedRate || "$—/hr",
+                    match: 85,
+                    available: true,
+                };
+            }
+            return undefined;
+        },
         hasApplied: (taskId) => workspace.applications.some((a) => a.taskId === taskId && a.freelancerId === userId),
         isTaskOwner,
         exploreTasks,
@@ -157,7 +158,7 @@ export function WorkspaceProvider({ children }) {
         myAssignedCollaborations: workspace.tasks.filter((t) => t.assignedFreelancerId),
         userId,
         userRole: workspace.userRole,
-    }), [workspace, loading, error, refresh, createTask, updateTask, deleteTask, applyToTask, updateApplicationStatus, assignFreelancer, updateWorkProgress, isTaskOwner, exploreTasks, myPostedTasks, assignedTasks, userId]);
+    }), [workspace, loading, error, refresh, createTask, updateTask, deleteTask, applyToTask, updateApplicationStatus, updateWorkProgress, isTaskOwner, exploreTasks, myPostedTasks, assignedTasks, userId]);
 
     const profileApi = useMemo(() => ({
         profile: workspace.profile ?? {

@@ -52,12 +52,25 @@ export async function getWorkspace(userId) {
         (a) => a._id.toString()
     ).map(serializeApplication);
 
+    const relatedFreelancerIds = new Set(
+        [
+            ...allTasksRaw.map((t) => t.assignedFreelancer?._id?.toString()).filter(Boolean),
+            ...appsOnMyTasks.map((a) => a.freelancer?._id?.toString()).filter(Boolean),
+        ].filter((id) => id !== uid)
+    );
+    const knownFreelancerIds = new Set(freelancers.map((f) => f._id.toString()));
+    const missingFreelancerIds = [...relatedFreelancerIds].filter((id) => !knownFreelancerIds.has(id));
+    const extraFreelancers = missingFreelancerIds.length
+        ? await User.find({ _id: { $in: missingFreelancerIds } }).lean()
+        : [];
+    const allFreelancers = uniqueById([...freelancers, ...extraFreelancers], (f) => f._id.toString());
+
     return {
         profile: serializeProfile(user),
         tasks,
         applications,
         works: works.map(serializeWork),
-        freelancers: freelancers.map(serializeFreelancer),
+        freelancers: allFreelancers.map(serializeFreelancer),
         userId: uid,
         userRole: user?.role,
     };

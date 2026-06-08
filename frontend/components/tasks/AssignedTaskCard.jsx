@@ -1,5 +1,5 @@
 "use client";
-import { Calendar, DollarSign, MessageSquare, Eye, MapPin, Activity, } from "lucide-react";
+import { Calendar, DollarSign, Eye, MapPin, Activity, } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
@@ -7,7 +7,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { PaymentStatusBadge, TaskStatusBadge } from "@/components/tasks/TaskStatusBadge";
 import { formatRelativeTime } from "@/lib/task-store";
 import { cn } from "@/lib/utils";
-export function AssignedTaskCard({ task, freelancer, onView, }) {
+export function AssignedTaskCard({ task, freelancer, onView }) {
     const activityLabel = task.lastActivity
         ? task.lastActivity
         : "Collaboration started";
@@ -83,14 +83,10 @@ export function AssignedTaskCard({ task, freelancer, onView, }) {
         </div>
       </div>
 
-      <div className="mt-4 flex flex-wrap gap-2">
-        <Button type="button" variant="secondary" size="sm" className="h-9 flex-1 gap-1.5 rounded-md transition-colors duration-200" onClick={onOpenChat}>
-          <MessageSquare className="h-3.5 w-3.5"/>
-          Open Chat
-        </Button>
-        <Button type="button" size="sm" className="h-9 flex-1 gap-1.5 rounded-md transition-colors duration-200" onClick={onView}>
+      <div className="mt-4">
+        <Button type="button" size="sm" className="h-9 w-full gap-1.5 rounded-md transition-colors duration-200" onClick={onView}>
           <Eye className="h-3.5 w-3.5"/>
-          Details
+          View details
         </Button>
       </div>
     </Card>);

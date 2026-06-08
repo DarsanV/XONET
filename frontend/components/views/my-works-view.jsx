@@ -24,10 +24,15 @@ function WorkCard({ work }) {
     const { updateWorkProgress } = useTaskStore();
     async function handleProgressChange(values) {
         const next = values[0] ?? work.progress;
-        await updateWorkProgress(work.id, next);
-        toast.success("Progress synced", {
-            description: "Client Tasks page updated in real time.",
-        });
+        try {
+            await updateWorkProgress(work.id, next);
+            toast.success("Progress synced", {
+                description: "Client Tasks page updated in real time.",
+            });
+        }
+        catch (err) {
+            toast.error(err.message || "Could not update progress");
+        }
     }
     return (<Card className={cn("border-border bg-card p-5 shadow-[0_1px_0_0_rgba(255,255,255,0.03)_inset]", "transition-all duration-300 hover:border-foreground/15")}>
       <div className="flex flex-wrap items-start justify-between gap-3">
@@ -70,9 +75,14 @@ function WorkCard({ work }) {
       </p>
 
       <div className="mt-4 flex gap-2">
-        {[25, 50, 75, 100].map((pct) => (<Button key={pct} type="button" variant="secondary" size="sm" className="h-8 flex-1 rounded-md text-xs" onClick={() => {
-                updateWorkProgress(work.id, pct);
-                toast.success(`Progress set to ${pct}%`);
+        {[25, 50, 75, 100].map((pct) => (<Button key={pct} type="button" variant="secondary" size="sm" className="h-8 flex-1 rounded-md text-xs" onClick={async () => {
+                try {
+                    await updateWorkProgress(work.id, pct);
+                    toast.success(`Progress set to ${pct}%`);
+                }
+                catch (err) {
+                    toast.error(err.message || "Could not update progress");
+                }
             }}>
             {pct}%
           </Button>))}
