@@ -1,8 +1,7 @@
 import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import { authConfig } from "./auth.config.js";
-
-const API_URL = process.env.API_URL || process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
+import { API_URL } from "./lib/api-url.js";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
     ...authConfig,
@@ -14,20 +13,24 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                 password: { label: "Password", type: "password" },
             },
             async authorize(credentials) {
-                if (!credentials?.email || !credentials?.password) {
-                    return null;
+                const email = credentials?.email?.toString().trim().toLowerCase();
+                const password = credentials?.password?.toString();
+                if (!email || !password) {
+                    throw new Error("Email and password are required");
                 }
-                const res = await fetch(`${API_URL}/api/auth/login`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        email: credentials.email,
-                        password: credentials.password,
-                    }),
-                });
+                let res;
+                try {
+                    res = await fetch(`${API_URL}/api/auth/login`, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ email, password }),
+                    });
+                } catch {
+                    throw new Error("Cannot reach the API server. Is the backend running?");
+                }
                 const json = await res.json().catch(() => ({}));
                 if (!res.ok || !json.success) {
-                    return null;
+                    throw new Error(json.error || "Invalid email or password");
                 }
                 return {
                     id: json.data.user.id,

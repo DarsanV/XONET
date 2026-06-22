@@ -86,9 +86,9 @@ export function TasksView() {
                 const freelancer = task.assignedFreelancerId
                     ? getFreelancer(task.assignedFreelancerId) ?? {
                         id: task.assignedFreelancerId,
-                        name: "Assigned freelancer",
-                        headline: "Profile loading…",
-                        location: "—",
+                        name: "Unknown user",
+                        headline: "",
+                        location: "",
                         rate: "—",
                     }
                     : undefined;

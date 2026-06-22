@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, } from "@/components/ui/select";
-import { EXPERIENCE_LEVELS, TASK_CATEGORIES } from "@/lib/dummy-data";
+import { EXPERIENCE_LEVELS, TASK_CATEGORIES } from "@/lib/constants";
 const schema = z.object({
     title: z.string().min(3, "Title must be at least 3 characters"),
     description: z.string().min(20, "Description must be at least 20 characters"),

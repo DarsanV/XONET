@@ -21,7 +21,8 @@ npm-debug.log*
 .vscode/*
 !.vscode/extensions.json
 
-# Legacy
+# Local dev database (when Atlas is unavailable)
+.data/
 .tanstack
 .tmp
 tmp

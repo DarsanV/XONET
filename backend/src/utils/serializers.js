@@ -6,6 +6,14 @@ function id(doc) {
     return doc._id?.toString?.() ?? doc.toString();
 }
 
+export function computeSkillMatch(userSkills = [], targetSkills = []) {
+    if (!targetSkills.length) return 0;
+    if (!userSkills.length) return 0;
+    const normalizedUser = userSkills.map((s) => s.toLowerCase());
+    const overlap = targetSkills.filter((skill) => normalizedUser.includes(skill.toLowerCase())).length;
+    return Math.round((overlap / targetSkills.length) * 100);
+}
+
 export function serializeUser(user) {
     if (!user)
         return null;
@@ -32,7 +40,6 @@ export function serializeUser(user) {
         links: u.links ?? { github: "", linkedin: "", portfolio: "" },
         resume: u.resume ?? { fileName: "", updatedAt: "", size: "" },
         rate: u.hourlyRate ? (u.hourlyRate.startsWith("$") ? u.hourlyRate : `$${u.hourlyRate}/hr`) : "",
-        match: 85,
     };
 }
 
@@ -55,7 +62,7 @@ export function serializeProfile(user) {
     };
 }
 
-export function serializeFreelancer(user) {
+export function serializeFreelancer(user, match = 0) {
     const u = serializeUser(user);
     if (!u)
         return null;
@@ -66,7 +73,7 @@ export function serializeFreelancer(user) {
         location: u.location,
         skills: u.skills,
         rate: u.rate || "$—/hr",
-        match: u.match,
+        match,
         available: u.available,
     };
 }
@@ -88,7 +95,7 @@ export function serializeTask(task) {
         experienceLevel: t.experienceLevel,
         category: t.category,
         status: t.status,
-        match: t.match ?? 80,
+        match: t.match ?? 0,
         paymentStatus: t.paymentStatus,
         progress: t.progress ?? 0,
         assignedFreelancerId: assigned ? id(assigned) : undefined,

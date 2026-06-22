@@ -21,13 +21,13 @@ export function LoginForm() {
         e.preventDefault();
         setLoading(true);
         const result = await signIn("credentials", {
-            email,
+            email: email.trim().toLowerCase(),
             password,
             redirect: false,
         });
         setLoading(false);
         if (result?.error) {
-            toast.error("Invalid email or password");
+            toast.error(result.error);
             return;
         }
         toast.success("Welcome back");

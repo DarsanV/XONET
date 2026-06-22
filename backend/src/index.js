@@ -6,7 +6,7 @@ async function startServer() {
     try {
         await connectDB();
         console.log("Connected to MongoDB successfully");
-        
+
         app.listen(env.port, () => {
             console.log(`XONET API running on http://localhost:${env.port}`);
         });

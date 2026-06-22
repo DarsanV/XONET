@@ -32,12 +32,14 @@ export async function login(req, res) {
     if (!parsed.success) {
         return res.status(400).json({ success: false, error: "Invalid credentials" });
     }
+    const email = parsed.data.email.toLowerCase().trim();
+    const password = parsed.data.password;
     await connectDB();
-    const user = await User.findOne({ email: parsed.data.email.toLowerCase().trim() }).select("+password");
+    const user = await User.findOne({ email }).select("+password");
     if (!user) {
         return res.status(401).json({ success: false, error: "Invalid email or password" });
     }
-    const valid = await bcrypt.compare(parsed.data.password, user.password);
+    const valid = await bcrypt.compare(password, user.password);
     if (!valid) {
         return res.status(401).json({ success: false, error: "Invalid email or password" });
     }

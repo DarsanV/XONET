@@ -1,6 +1,5 @@
-import { getSession } from "next-auth/react";
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
+import { getSession, signOut } from "next-auth/react";
+import { API_URL } from "@/lib/api-url";
 
 export async function apiFetch(path, options = {}) {
     const session = typeof window !== "undefined" ? await getSession() : null;
@@ -17,6 +16,9 @@ export async function apiFetch(path, options = {}) {
     });
     const json = await res.json().catch(() => ({}));
     if (!res.ok || json.success === false) {
+        if (res.status === 401 && typeof window !== "undefined") {
+            await signOut({ callbackUrl: "/login" });
+        }
         const err = new Error(json.error || "Request failed");
         err.status = res.status;
         throw err;

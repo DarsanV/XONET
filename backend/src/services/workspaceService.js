@@ -9,6 +9,7 @@ import {
     serializeWork,
     serializeProfile,
     serializeFreelancer,
+    computeSkillMatch,
 } from "../utils/serializers.js";
 
 function uniqueById(items, getId) {
@@ -46,7 +47,17 @@ export async function getWorkspace(userId) {
         (t) => t._id.toString()
     );
 
-    const tasks = allTasksRaw.map(serializeTask);
+    const userSkills = user?.skills ?? [];
+    const openTaskSkills = openMarketTasks.flatMap((t) => t.skills ?? []);
+
+    const tasks = allTasksRaw.map((t) => {
+        const serialized = serializeTask(t);
+        const isExploreTask = t.creator?.toString?.() !== uid && t.status === "Open";
+        if (isExploreTask) {
+            serialized.match = computeSkillMatch(userSkills, t.skills ?? []);
+        }
+        return serialized;
+    });
     const applications = uniqueById(
         [...appsOnMyTasks, ...myApplications],
         (a) => a._id.toString()
@@ -70,7 +81,7 @@ export async function getWorkspace(userId) {
         tasks,
         applications,
         works: works.map(serializeWork),
-        freelancers: allFreelancers.map(serializeFreelancer),
+        freelancers: allFreelancers.map((f) => serializeFreelancer(f, computeSkillMatch(f.skills ?? [], openTaskSkills))),
         userId: uid,
         userRole: user?.role,
     };

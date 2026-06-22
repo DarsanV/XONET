@@ -7,7 +7,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, } from "@/components/ui/select";
-import { TASK_CATEGORIES } from "@/lib/dummy-data";
+import { TASK_CATEGORIES } from "@/lib/constants";
 import { useTaskStore } from "@/lib/task-store";
 function parseBudget(budget) {
     const n = parseInt(budget.replace(/[^0-9]/g, ""), 10);

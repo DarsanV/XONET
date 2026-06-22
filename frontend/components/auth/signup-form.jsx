@@ -23,17 +23,18 @@ export function SignupForm() {
         e.preventDefault();
         setLoading(true);
         try {
+            const normalizedEmail = email.trim().toLowerCase();
             await apiFetch("/api/auth/register", {
                 method: "POST",
-                body: JSON.stringify({ fullName, email, password, role }),
+                body: JSON.stringify({ fullName: fullName.trim(), email: normalizedEmail, password, role }),
             });
             const result = await signIn("credentials", {
-                email,
+                email: normalizedEmail,
                 password,
                 redirect: false,
             });
             if (result?.error) {
-                toast.error("Account created — please sign in");
+                toast.error(result.error || "Account created — please sign in");
                 router.push("/login");
                 return;
             }
@@ -65,7 +66,7 @@ export function SignupForm() {
                             value={fullName}
                             onChange={(e) => setFullName(e.target.value)}
                             className="h-10 border-border bg-background"
-                            placeholder="Alex Mercer"
+                            placeholder="Your full name"
                             suppressHydrationWarning
                         />
                     </div>

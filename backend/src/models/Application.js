@@ -10,6 +10,16 @@ const applicationSchema = new mongoose.Schema({
         enum: ["Pending", "Accepted", "Rejected"],
         default: "Pending",
     },
+    type: {
+        type: String,
+        enum: ["application", "invitation"],
+        default: "application",
+    },
+    initiatedBy: {
+        type: String,
+        enum: ["client", "freelancer"],
+        default: "freelancer",
+    },
     appliedAt: { type: Date, default: Date.now },
 }, { timestamps: true });
 

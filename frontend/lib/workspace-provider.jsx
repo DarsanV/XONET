@@ -130,25 +130,7 @@ export function WorkspaceProvider({ children }) {
         getWorkForTask: (taskId) => workspace.works.find((w) => w.taskId === taskId),
         getMyWorks: () => workspace.works.filter((w) => w.freelancerId === userId),
         getApplicationsForTask: (taskId) => workspace.applications.filter((a) => a.taskId === taskId),
-        getFreelancer: (id) => {
-            const fromList = workspace.freelancers.find((f) => f.id === id);
-            if (fromList)
-                return fromList;
-            const fromApplication = workspace.applications.find((a) => a.freelancerId === id);
-            if (fromApplication) {
-                return {
-                    id,
-                    name: "Freelancer",
-                    headline: "",
-                    location: "",
-                    skills: [],
-                    rate: fromApplication.proposedRate || "$—/hr",
-                    match: 85,
-                    available: true,
-                };
-            }
-            return undefined;
-        },
+        getFreelancer: (id) => workspace.freelancers.find((f) => f.id === id),
         hasApplied: (taskId) => workspace.applications.some((a) => a.taskId === taskId && a.freelancerId === userId),
         isTaskOwner,
         exploreTasks,
