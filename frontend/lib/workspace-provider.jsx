@@ -4,6 +4,7 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useState } 
 import { useSession } from "next-auth/react";
 import { usePathname } from "next/navigation";
 import { apiFetch } from "@/lib/api-client";
+import { triggerNotificationRefresh } from "@/lib/notification-provider";
 
 const WorkspaceContext = createContext(null);
 
@@ -35,6 +36,7 @@ export function WorkspaceProvider({ children }) {
             const data = await apiFetch("/api/workspace");
             setWorkspace(data);
             setError(null);
+            triggerNotificationRefresh();
         }
         catch (err) {
             setError(err.message);

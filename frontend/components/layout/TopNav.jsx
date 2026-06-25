@@ -6,7 +6,26 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger, } from "@/components/ui/dropdown-menu";
+import { NotificationBell } from "@/components/notifications/NotificationBell";
 import { useProfileStore } from "@/lib/profile-store";
+import { apiFetchPublic } from "@/lib/api-client";
+
+async function handleLogout() {
+    const session = await import("next-auth/react").then((m) => m.getSession());
+    try {
+        if (session?.refreshToken) {
+            await apiFetchPublic("/api/auth/logout", {
+                method: "POST",
+                body: JSON.stringify({ refreshToken: session.refreshToken }),
+                credentials: "include",
+            });
+        }
+    } catch {
+        // proceed with client sign-out even if API logout fails
+    }
+    await signOut({ callbackUrl: "/login" });
+}
+
 export function TopNav() {
     const { profile } = useProfileStore();
     return (<header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b border-border bg-background/80 px-4 backdrop-blur-md md:px-6">
@@ -24,6 +43,8 @@ export function TopNav() {
           <Input placeholder="Search projects, clients, skills…" className="h-10 rounded-md border-border bg-card pl-9 text-sm placeholder:text-muted-foreground/70 focus-visible:ring-1 focus-visible:ring-ring"/>
         </div>
       </div>
+
+      <NotificationBell />
 
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
@@ -50,7 +71,7 @@ export function TopNav() {
           <DropdownMenuSeparator />
           <DropdownMenuItem
             className="text-destructive focus:text-destructive cursor-pointer"
-            onClick={() => signOut({ callbackUrl: "/login" })}
+            onClick={handleLogout}
           >
             <LogOut className="mr-2 h-4 w-4"/> Logout
           </DropdownMenuItem>

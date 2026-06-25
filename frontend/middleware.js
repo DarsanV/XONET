@@ -4,16 +4,21 @@ import { NextResponse } from "next/server";
 
 const { auth } = NextAuth(authConfig);
 
-const authRoutes = ["/login", "/signup"];
+const publicAuthRoutes = [
+    "/login",
+    "/signup",
+    "/forgot-password",
+    "/reset-password",
+    "/verify-email",
+];
 
 export default auth((req) => {
     const { pathname } = req.nextUrl;
-    const isLoggedIn = !!req.auth;
-    const isAuthRoute = authRoutes.some((r) => pathname.startsWith(r));
+    const isLoggedIn = !!req.auth?.user && req.auth?.error !== "RefreshAccessTokenError";
+    const isPublicAuthRoute = publicAuthRoutes.some((r) => pathname.startsWith(r));
     const isApiAuth = pathname.startsWith("/api/auth");
-    const isPublicApi = pathname.startsWith("/api/auth/register");
 
-    if (isApiAuth || isPublicApi) {
+    if (isApiAuth) {
         return NextResponse.next();
     }
 
@@ -21,13 +26,13 @@ export default auth((req) => {
         return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
     }
 
-    if (!isLoggedIn && !isAuthRoute) {
+    if (!isLoggedIn && !isPublicAuthRoute) {
         const login = new URL("/login", req.nextUrl.origin);
         login.searchParams.set("callbackUrl", pathname);
         return NextResponse.redirect(login);
     }
 
-    if (isLoggedIn && isAuthRoute) {
+    if (isLoggedIn && isPublicAuthRoute && !pathname.startsWith("/verify-email")) {
         return NextResponse.redirect(new URL("/", req.nextUrl.origin));
     }
 

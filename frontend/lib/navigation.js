@@ -1,9 +1,10 @@
-import { LayoutDashboard, Compass, Briefcase, Users, UserCircle, FolderKanban } from "lucide-react";
+import { LayoutDashboard, Compass, Briefcase, Users, UserCircle, FolderKanban, Bell } from "lucide-react";
 export const navGroups = [
     {
         label: "Overview",
         items: [
             { title: "Dashboard", href: "/", icon: LayoutDashboard },
+            { title: "Notifications", href: "/notifications", icon: Bell },
         ]
     },
     {

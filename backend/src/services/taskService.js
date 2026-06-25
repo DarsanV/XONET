@@ -5,6 +5,11 @@ import Work from "../models/Work.js";
 import User from "../models/User.js";
 import { serializeTask } from "../utils/serializers.js";
 import { canActAsFreelancer } from "../middleware/auth.js";
+import {
+    notifyTaskStatusChanged,
+    notifyPaymentStatusChanged,
+    notifyTaskCompleted,
+} from "./notificationTriggers.js";
 
 const UPDATABLE_TASK_FIELDS = [
     "title",
@@ -49,6 +54,8 @@ export async function updateTask(taskId, userId, input) {
         err.status = 403;
         throw err;
     }
+    const previousStatus = task.status;
+    const previousPaymentStatus = task.paymentStatus;
     const safeInput = {};
     for (const key of UPDATABLE_TASK_FIELDS) {
         if (input[key] !== undefined) {
@@ -63,6 +70,30 @@ export async function updateTask(taskId, userId, input) {
     Object.assign(task, safeInput);
     await task.save();
     const populated = await Task.findById(task._id).populate("creator assignedFreelancer");
+
+    const recipientIds = new Set([task.creator.toString()]);
+    if (task.assignedFreelancer) {
+        recipientIds.add(task.assignedFreelancer._id?.toString?.() ?? task.assignedFreelancer.toString());
+    }
+
+    if (safeInput.status !== undefined && task.status !== previousStatus) {
+        if (task.status === "Completed") {
+            await notifyTaskCompleted({ task, userIds: [...recipientIds] });
+        } else {
+            for (const recipientId of recipientIds) {
+                if (recipientId === userId.toString()) continue;
+                await notifyTaskStatusChanged({ task, userId: recipientId, previousStatus });
+            }
+        }
+    }
+
+    if (safeInput.paymentStatus !== undefined && task.paymentStatus !== previousPaymentStatus) {
+        for (const recipientId of recipientIds) {
+            if (recipientId === userId.toString()) continue;
+            await notifyPaymentStatusChanged({ task, userId: recipientId, previousStatus: previousPaymentStatus });
+        }
+    }
+
     return serializeTask(populated);
 }
 

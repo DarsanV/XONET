@@ -24,12 +24,16 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify({ email, password }),
+                        credentials: "include",
                     });
                 } catch {
                     throw new Error("Cannot reach the API server. Is the backend running?");
                 }
                 const json = await res.json().catch(() => ({}));
                 if (!res.ok || !json.success) {
+                    if (json.code === "EMAIL_NOT_VERIFIED") {
+                        throw new Error("EMAIL_NOT_VERIFIED");
+                    }
                     throw new Error(json.error || "Invalid email or password");
                 }
                 return {
@@ -37,7 +41,9 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                     email: json.data.user.email,
                     name: json.data.user.name,
                     role: json.data.user.role,
-                    accessToken: json.data.token,
+                    emailVerified: json.data.user.emailVerified,
+                    accessToken: json.data.accessToken,
+                    refreshToken: json.data.refreshToken,
                 };
             },
         }),

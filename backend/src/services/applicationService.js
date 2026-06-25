@@ -5,6 +5,7 @@ import Work from "../models/Work.js";
 import User from "../models/User.js";
 import { serializeApplication } from "../utils/serializers.js";
 import { assignFreelancerToTask } from "./taskService.js";
+import { notifyApplicationReceived, notifyTaskAssigned } from "./notificationTriggers.js";
 
 export async function applyToTask(taskId, freelancerId, coverLetter, proposedRate = "") {
     await connectDB();
@@ -38,6 +39,10 @@ export async function applyToTask(taskId, freelancerId, coverLetter, proposedRat
         status: "Pending",
     });
     const populated = await Application.findById(app._id).populate("task freelancer");
+    const freelancer = await User.findById(freelancerId);
+    if (freelancer) {
+        await notifyApplicationReceived({ task, freelancer });
+    }
     return serializeApplication(populated);
 }
 
@@ -77,7 +82,13 @@ export async function updateApplicationStatus(applicationId, ownerId, status) {
         );
         app.status = "Accepted";
         await app.save();
-        await assignFreelancerToTask(task._id.toString(), ownerId, app.freelancer.toString());
+        const assignedTask = await assignFreelancerToTask(task._id.toString(), ownerId, app.freelancer.toString());
+        const freelancer = await User.findById(app.freelancer);
+        const client = await User.findById(ownerId);
+        if (freelancer && assignedTask) {
+            const taskDoc = await Task.findById(task._id);
+            await notifyTaskAssigned({ task: taskDoc, freelancer, client });
+        }
     }
     else {
         app.status = status;

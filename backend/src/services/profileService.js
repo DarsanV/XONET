@@ -1,6 +1,7 @@
 import connectDB from "../db/connect.js";
 import User from "../models/User.js";
 import { serializeProfile } from "../utils/serializers.js";
+import { notifyProfileUpdated } from "./notificationTriggers.js";
 
 export async function updateProfile(userId, updates) {
     await connectDB();
@@ -15,6 +16,7 @@ export async function updateProfile(userId, updates) {
         }
     }
     const user = await User.findByIdAndUpdate(userId, patch, { new: true }).lean();
+    await notifyProfileUpdated({ userId });
     return serializeProfile(user);
 }
 

@@ -3,6 +3,7 @@ import Work from "../models/Work.js";
 import Task from "../models/Task.js";
 import User from "../models/User.js";
 import { serializeWork } from "../utils/serializers.js";
+import { notifyProgressUpdated, notifyTaskCompleted } from "./notificationTriggers.js";
 
 export async function updateWorkProgress(workId, freelancerId, progress) {
     await connectDB();
@@ -25,6 +26,7 @@ export async function updateWorkProgress(workId, freelancerId, progress) {
 
     const task = await Task.findById(work.task);
     const freelancer = await User.findById(freelancerId);
+    const previousStatus = task?.status;
     if (task) {
         task.progress = clamped;
         task.status = clamped >= 100 ? "Completed" : clamped > 0 ? "In Progress" : task.status;
@@ -32,6 +34,20 @@ export async function updateWorkProgress(workId, freelancerId, progress) {
         task.lastActivity = `${freelancer?.fullName ?? "Freelancer"} updated progress to ${clamped}%`;
         task.lastActivityAt = new Date();
         await task.save();
+
+        await notifyProgressUpdated({
+            task,
+            work,
+            freelancer,
+            clientId: task.creator.toString(),
+        });
+
+        if (task.status === "Completed" && previousStatus !== "Completed") {
+            await notifyTaskCompleted({
+                task,
+                userIds: [task.creator.toString(), freelancerId.toString()],
+            });
+        }
     }
 
     return serializeWork(work);

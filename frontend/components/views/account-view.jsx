@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { SkillsEditor } from "@/components/profile/skills-editor";
 import { ExperienceEditor } from "@/components/profile/experience-editor";
+import { ChangePasswordForm } from "@/components/auth/change-password-form";
 import { useProfileStore } from "@/lib/profile-store";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
@@ -204,6 +205,8 @@ export function AccountView() {
           <ExperienceEditor experience={data.experience} editing={editing} onAdd={editing ? draftAddExperience : () => { }} onUpdate={editing ? draftUpdateExperience : () => { }} onDelete={editing ? draftDeleteExperience : () => { }}/>
         </CardContent>
       </Card>
+
+      <ChangePasswordForm />
     </div>);
 }
 function ProfileField({ label, value, editing, onChange, type = "text", }) {
