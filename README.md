@@ -1,4 +1,12 @@
 # XONET — AI-Powered Freelance Marketplace
+<img width="1891" height="857" alt="Screenshot 2026-06-29 220322" src="https://github.com/user-attachments/assets/74552f15-e7aa-47a3-84b3-a2611a2d2d3b" />
+<img width="1888" height="853" alt="Screenshot 2026-06-29 220042" src="https://github.com/user-attachments/assets/94cb7c34-14c4-45c5-aa53-5c5ab67b2a17" />
+<img width="1887" height="857" alt="Screenshot 2026-06-29 220107" src="https://github.com/user-attachments/assets/b0ebc494-ba0e-479c-8da9-45c7199ce38d" />
+<img width="1902" height="846" alt="Screenshot 2026-06-29 220128" src="https://github.com/user-attachments/assets/614c70b6-60e9-427c-a827-ea3fb8915fc9" />
+<img width="1878" height="857" alt="Screenshot 2026-06-29 220148" src="https://github.com/user-attachments/assets/03a3765a-b27b-4473-8a0e-5ec6ea1e0498" />
+
+
+
 
 Modern freelance marketplace that intelligently connects clients and freelancers through streamlined task management, project tracking, and AI-driven workflow management.
 
